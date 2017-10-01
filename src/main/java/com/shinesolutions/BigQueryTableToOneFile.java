@@ -10,6 +10,7 @@ import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
 
 import static org.apache.beam.runners.dataflow.options.DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType.THROUGHPUT_BASED;
+import static org.apache.beam.sdk.io.FileBasedSink.CompressionType.GZIP;
 
 /**
  * BigQuery -> ParDo -> GCS (one file)
@@ -33,7 +34,10 @@ public class BigQueryTableToOneFile {
                         c.output(row.toPrettyString()); //e.g. {year=2010, month=1, day=1, wikimedia_project=m, language=commons, title=Image:Coat_of_arms_kautenbach_luxbrg.png, views=1}
                     }
                 }))
-                .apply(TextIO.write().to(GCS_OUTPUT_FILE).withoutSharding());
+                .apply(TextIO.write().to(GCS_OUTPUT_FILE)
+                        .withoutSharding()
+                        .withWritableByteChannelFactory(GZIP)
+                );
         pipeline.run();
     }
 }
