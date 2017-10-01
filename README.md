@@ -1,7 +1,10 @@
 # bigquery-table-to-one-file
-Using Cloud Dataflow, this Java app reads a table in BigQuery, and turns it into one file in GCS. Why? Because BigQuery only support unsharded exports under 1GB.
+Using Cloud Dataflow, this trivial Java application reads a table in BigQuery, and turns it into one file in GCS (GZIP compressed format). Why? Because currently BigQuery only support unsharded exports of under 1 GB.
 
-Program uses the default credentials set to the environment variable `GOOGLE_APPLICATION_CREDENTIALS`. See all about that here: https://developers.google.com/identity/protocols/application-default-credentials
+https://cloud.google.com/bigquery/docs/exporting-data
+https://cloud.google.com/dataflow/
+
+It uses the default credentials set to the environment variable `GOOGLE_APPLICATION_CREDENTIALS`. See all about that here: https://developers.google.com/identity/protocols/application-default-credentials
 
 In the code, change the table name and bucket details etc. to suit your needs. You will also just need to create the GCS bucket(s) yourself. I wasn't bothered making them cli parameters.
 
