@@ -18,7 +18,7 @@ To run:
 --stagingLocation=gs://<your_bucket>/jars
 --tempLocation=gs://<your_bucket>/tmp`
 
-It should look like this when it's running:
+It should look like this when it's running. I tested it with the public WIKI table (1 billion rows & ~100GB) and it took about 6 hours using 50 `n1-standard-1` workers:
 
 ![alt text](https://user-images.githubusercontent.com/5554342/30951859-7ee93e9a-a468-11e7-9875-e363b18966eb.png)
 ![alt text](https://user-images.githubusercontent.com/5554342/30951877-95c47de6-a468-11e7-8976-3cf4d923f4c2.png)
