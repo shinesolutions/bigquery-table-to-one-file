@@ -9,6 +9,9 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import static org.apache.beam.runners.dataflow.options.DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType.THROUGHPUT_BASED;
 import static org.apache.beam.sdk.io.FileBasedSink.CompressionType.GZIP;
 
@@ -16,8 +19,9 @@ import static org.apache.beam.sdk.io.FileBasedSink.CompressionType.GZIP;
  * BigQuery -> ParDo -> GCS (one file)
  */
 public class BigQueryTableToOneFile {
-    private static final String BIGQUERY_TABLE = "bigquery-samples:wikipedia_benchmark.Wiki1B";
-    private static final String GCS_OUTPUT_FILE = "gs://bigquery-table-to-one-file/output/result.csv";
+    private static final String BIGQUERY_TABLE = "bigquery-samples:wikipedia_benchmark.Wiki1M";
+    private static final String GCS_OUTPUT_FILE = "gs://bigquery-table-to-one-file/output/wiki_1M.csv";
+    private static final String[] TABLE_ROW_FIELDS = {"year", "month", "day", "wikimedia_project", "language", "title", "views"};
 
     public static void main(String[] args) throws Exception {
         DataflowPipelineOptions options = PipelineOptionsFactory
@@ -30,8 +34,11 @@ public class BigQueryTableToOneFile {
                 .apply(ParDo.of(new DoFn<TableRow, String>() {
                     @ProcessElement
                     public void processElement(ProcessContext c) throws Exception {
-                        TableRow row = c.element();
-                        c.output(row.toPrettyString()); //e.g. {year=2010, month=1, day=1, wikimedia_project=m, language=commons, title=Image:Coat_of_arms_kautenbach_luxbrg.png, views=1}
+                        String commaSep = Arrays.asList(TABLE_ROW_FIELDS)
+                                .stream()
+                                .map(field -> c.element().get(field).toString())
+                                .collect(Collectors.joining(","));
+                        c.output(commaSep);
                     }
                 }))
                 .apply(TextIO.write().to(GCS_OUTPUT_FILE)
