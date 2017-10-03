@@ -36,7 +36,7 @@ public class BigQueryTableToOneFile {
                     public void processElement(ProcessContext c) throws Exception {
                         String commaSep = Arrays.asList(TABLE_ROW_FIELDS)
                                 .stream()
-                                .map(field -> c.element().get(field).toString())
+                                .map(field -> c.element().get(field).toString().replaceAll(",", "-"))
                                 .collect(Collectors.joining(","));
                         c.output(commaSep);
                     }
